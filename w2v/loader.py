@@ -5,7 +5,9 @@ class Loader(object):
         pass
     
     def load_text(self):
-        pass
+        text = ""
+        return text
     
     def load_zip(self):
-        pass
+        content = ""
+        return content
