@@ -32,33 +32,56 @@ all context that applies to it
 
 """
 
-def prepare_training(window_size: int, sentences: list[list[str]]):
-    data = {}
+def prepare_training_data(window_size: int, sentences: list[list[str]]):
+    
+    word_counts = {}
     
     for sentence in sentences:
         for word in sentence:
-            if word not in data:
-                data[word] = 1
-            else:
-                data[word] += 1
+            if word not in word_counts:
+                word_counts[word] = 1
+                
+    sorted_words = sorted(list(word_counts.keys()))
+    vocabulary = { word: i for i in enumerate(sorted_words) }
+    vocabulary_size = len(vocabulary)
     
-    vocabulary_size = len(data)
-    vocabulary = {}
-    
-    for i in range(len(data)):
-        vocabulary[data[i]] = i
-        
     x_train, y_train = [], []
+    
     for sentence in sentences:
         for i in range(len(sentence)):
-            center_word = [0 for _ in range(vocabulary_size)]
-            center_word[vocabulary[sentence[i]]] = i
+            
+            target = [0 for _ in range(vocabulary_size)]
             context = [0 for _ in range(vocabulary_size)]
             
-            for j in range(i - window_size, i + window_size):
-                if i != j and j >= 0 and j < len(sentences):
-                    context[vocabulary[sentences[j]]] += 1
-                    x_train.append(center_word)
-                    y_train.append(context)
+            target[] = 1
+    
+    
+    pass
+    # word_counts = {}
+    
+    # for sentence in sentences:
+    #     for word in sentence:
+    #         if word not in word_counts:
+    #             word_counts[word] = 1
+    #         else:
+    #             word_counts[word] += 1
+    
+    # sorted_words = sorted(list(word_counts.keys()))
+    # vocabulary = { word: i for i, word in enumerate(sorted_words)}
+    # vocabulary_size = len(vocabulary)
+        
+    # x_train, y_train = [], []
+    
+    # for sentence in sentences:
+    #     for i in range(len(sentence)):
+    #         center_word = [0 for _ in range(vocabulary_size)]
+    #         center_word[vocabulary[sentence[i]]] = i
+    #         context = [0 for _ in range(vocabulary_size)]
+            
+    #         for j in range(i - window_size, i + window_size):
+    #             if i != j and j >= 0 and j < len(sentences):
+    #                 context[vocabulary[sentences[j]]] += 1
+    #                 x_train.append(center_word)
+    #                 y_train.append(context)
 
-    return vocabulary, vocabulary_size, x_train, y_train
+    # return vocabulary, vocabulary_size, x_train, y_train
