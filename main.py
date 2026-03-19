@@ -120,12 +120,6 @@ class Word2Vec:
         top_indices = np.argsort(prediction)[-predictions:][::-1]
         return [(self.index_word[i], prediction[i]) for i in top_indices]
     
-    # def get_embedding(self, word):
-    #     pass
-    
-    # def cosine_similarity(self, word1, word2):
-    #     pass
-    
 raw_text = gutenberg.raw('carroll-alice.txt')
 
 model = Word2Vec(embedding_dim=50, learning_rate=0.01, epochs=5, window_size=2)
