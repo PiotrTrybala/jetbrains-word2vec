@@ -3,11 +3,11 @@ class Loader(object):
     
     def __init__(self):
         pass
+    @staticmethod
+    def load_text(filename: str) -> str:
+        pass
     
-    def load_text(self):
-        text = ""
-        return text
-    
-    def load_zip(self):
+    @staticmethod
+    def load_zip(filename: str) -> str:
         content = ""
         return content

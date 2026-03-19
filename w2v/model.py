@@ -13,7 +13,7 @@ class Word2Vec(object):
         pass
     
     """"""
-    def back_propagate(self, input, output):
+    def propagate_backward(self, input, output):
         pass
     
     """"""
