@@ -76,7 +76,10 @@ class Word2Vec:
         e_x = np.exp(x - np.max(x))
         return e_x / e_x.sum()
     
-    def train(self, corpus):
+    def _sigmoid(self, x):
+        return 1 / (1 + np.exp(-x))
+    
+    def train(self, corpus, k=5):
         sentences = self.preprocess(corpus)
         self.prepare_vocabulary(sentences)
         traning_pairs = self._prepare_training_data(sentences)
@@ -85,28 +88,37 @@ class Word2Vec:
         print(f'traning samples: {len(traning_pairs)}')
         
         for epoch in range(self.epochs):
-            loss = 0
+            total_loss = 0
             
-            for target_idx, context_idx in tqdm(traning_pairs, f'Epoch {epoch}'):
+            for target_idx, context_idx in tqdm(traning_pairs, f'Epoch {epoch + 1}'):
                 
                 hidden = self.w1[target_idx]
-                output = np.dot(hidden, self.w2)
-                prediction = self._softmax(output)
+                output = np.dot(hidden, self.w2[:, context_idx])
+                prediction = self._sigmoid(output)
                 
-                error = prediction
-                error[context_idx] -= 1
+                error = prediction - 1
                 
-                dw2 = np.outer(hidden, error)
-                dw1 = np.dot(self.w2, error)
+                negative_samples = np.random.choice(self.vocabulary_count, size=k)
                 
+                dw1 = error * self.w2[:, context_idx]
+                
+                self.w2[:, context_idx] -= self.learning_rate * (error * hidden)
+                
+                for negative_idx in negative_samples:
+                    if negative_idx == context_idx: continue
+                    
+                    negative_output = np.dot(hidden, self.w2[:,negative_idx])
+                    negative_prediction = self._sigmoid(negative_output)
+                    
+                    negative_error = negative_prediction - 0
+                    
+                    dw1 += negative_error * self.w2[:,negative_idx]
+                    self.w2[:,negative_idx] -= self.learning_rate * (error * hidden)
+                    
                 self.w1[target_idx] -= self.learning_rate * dw1
-                self.w2 -= self.learning_rate * dw2
                 
-                p_correct = np.clip(prediction[context_idx], 1e-12, 1.0)
-                
-                loss += -np.log(p_correct)
-                
-            print(f'Loss: {loss / len(traning_pairs):.4f}')
+                total_loss += -np.log(prediction + 1e-10)  
+            print(f'Loss: {total_loss / len(traning_pairs):.4f}')
     
     def predict(self, word, predictions=5):
         
